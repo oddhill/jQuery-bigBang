@@ -7,41 +7,75 @@
  * The project and it's documentation is available at
  * https://github.com/oddhill/bigBang
  *
- * Version 1.0.
+ * Version 1.1.
  *
  * Development is sponsored by Odd Hill, www.oddhill.se.
  */
 
 (function($) {
 
-  $.fn.bigBang = function(selector) {
+  $.fn.bigBang = function(options) {
   
+    // Merge the default options with the ones provided.
+    var settings = $.extend({
+      selector: ".wrapper",
+      hoverClass: false,
+      cursor: "pointer",
+      blankTarget: "auto",
+      ignore: "a"
+    }, options);
+
     return this.each(function() {
     
       // Save the href of the anchor.
       var href = $(this).attr("href");
       
       // Check to see if the anchor should be opened in a new window.
-      var blankTarget = $(this).attr("rel") == "_blank";
+      var blankTarget = settings.blankTarget == "auto" ? $(this).attr("rel") == "_blank" : settings.blankTarget;
 
-      // Get the closest parent matching the specified selector. Add the click
-      // event, and set the cursor to a pointer.
-      $(this).closest(selector).click(function(event) {
-        if (event.target.nodeName != "A") {
-        
-          // If the element that triggered the click isn't an anchor, go to the
-          // href of the original anchor.
-          if (blankTarget) {
-            // Open the href in a new window.
-            window.open(href);
-          }
-          else {
-            // Simply go to the href.
-            window.location = href;
-          }
-          
+      // Get the elements to ignore.
+      var ignore = settings.ignore ? settings.ignore.split(",") : false;
+
+      // Find the wrapper that we're looking for, using the specified selector
+      // from the settings.
+      var wrapper = $(this).closest(settings.selector);
+      
+      if (!wrapper.length) {
+        // If we couldn't find a wrapper, bail out early.
+        return;
+      }
+
+      // Add the click event to the wrapper.
+      wrapper.click(function(event) {
+        // If the triggering element matches the ones we should be ignoring,
+        // don't do anything.
+        if (ignore && $.inArray(event.target.tagName.toLowerCase(), ignore) != -1) {
+          return;
         }
-      }).css("cursor", "pointer");
+
+        if (blankTarget) {
+          // Open the href in a new window.
+          window.open(href);
+        }
+        else {
+          // Simply go to the href.
+          window.location = href;
+        }
+      });
+      
+      // Add the specified class on hover.
+      if (settings.hoverClass) {
+        wrapper.hover(function() {
+          $(this).addClass(settings.hoverClass);
+        }, function() {
+          $(this).removeClass(settings.hoverClass);
+        });
+      }
+      
+      // Set the specified cursor.
+      if (settings.cursor) {
+        wrapper.css("cursor", settings.cursor);
+      }
       
     });
   
