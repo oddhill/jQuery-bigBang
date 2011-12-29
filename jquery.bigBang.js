@@ -7,7 +7,7 @@
  * The project and it's documentation is available at
  * https://github.com/oddhill/bigBang
  *
- * Version 1.1.
+ * Version 1.2.
  *
  * Development is sponsored by Odd Hill, www.oddhill.se.
  */
@@ -47,9 +47,9 @@
 
       // Add the click event to the wrapper.
       wrapper.click(function(event) {
-        // If the triggering element matches the ones we should be ignoring,
-        // don't do anything.
-        if (ignore && $.inArray(event.target.tagName.toLowerCase(), ignore) != -1) {
+        // If the triggering element or one of it's parents inside the wrapper
+        // matches the ones we should be ignoring, don't do anything.
+        if (ignore && ($.inArray(event.target.tagName.toLowerCase(), ignore) != -1 || $(event.target).parentsUntil(settings.selector, ignore.join(",")).length > 0)) {
           return;
         }
 

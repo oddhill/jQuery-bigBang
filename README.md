@@ -1,4 +1,4 @@
-bigBang 1.1
+bigBang 1.2
 ===========
 A tiny jQuery plugin that makes an entire container link to the url of a containing link.
 
